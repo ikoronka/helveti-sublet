@@ -1,4 +1,4 @@
-const GQL_ENDPOINT = 'http://localhost:8000/graphql'
+const GQL_ENDPOINT = import.meta.env.VITE_GQL_ENDPOINT ?? '/graphql'
 
 export async function gqlFetch<T>(query: string, variables?: Record<string, unknown>): Promise<T> {
   const res = await fetch(GQL_ENDPOINT, {
