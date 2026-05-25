@@ -38,7 +38,7 @@ Scrapes Flatfox and ImmoScout24, extracts structured fields from German/English 
 
 - Node.js 20+ and pnpm
 - Python 3.13+ and [uv](https://docs.astral.sh/uv/)
-- A [Gemini API key](https://aistudio.google.com/app/apikey) (free tier is sufficient)
+- [Ollama](https://ollama.com) with `llama3.2:3b` pulled (`ollama pull llama3.2:3b`)
 
 ---
 
@@ -125,5 +125,4 @@ See [`.env.example`](.env.example). Copy it to `backend/.env`:
 
 | Variable | Required | Description |
 |---|---|---|
-| `GEMINI_API_KEY` | Yes | Gemini API key for LLM extraction fallback |
 | `DATABASE_URL` | No | SQLite path (default: `sqlite+aiosqlite:///./helveti.db`) |

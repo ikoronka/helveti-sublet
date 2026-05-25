@@ -48,7 +48,7 @@ class ImmoScoutScraper:
 
                 mapped = [
                     m for item in raw
-                    if (m := self._map(item)) and m["price_chf"] is not None
+                    if (m := self._map(item)) and m["price_chf"] is not None and m["rooms"] is not None
                 ]
                 results.extend(mapped)
                 logger.info("ImmoScout: page %d/%d — %d listings", pn, PAGES_TO_SCRAPE, len(mapped))

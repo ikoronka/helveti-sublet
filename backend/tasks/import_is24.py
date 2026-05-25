@@ -48,7 +48,7 @@ async def main(json_path: str) -> None:
             result = await session.execute(select(Listing).where(Listing.id == lid))
             existing = result.scalar_one_or_none()
 
-            if data["price_chf"] is None:
+            if data["price_chf"] is None or data["rooms"] is None:
                 continue
 
             if existing:

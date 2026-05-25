@@ -1,27 +1,31 @@
 services:
   backend:
     build: ./backend
+    container_name: helvetisublet-backend
     restart: unless-stopped
     volumes:
       - db_data:/app/data
     environment:
-      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
       - DATABASE_URL=sqlite+aiosqlite:////app/data/helveti.db
     networks:
-      - app
+      - internal
+      - proxy
 
   frontend:
     build: ./frontend
+    container_name: helvetisublet-frontend
     restart: unless-stopped
-    ports:
-      - "80:80"
     depends_on:
       - backend
     networks:
-      - app
+      - internal
+      - proxy
 
 volumes:
   db_data:
 
 networks:
-  app:
+  internal:
+  proxy:
+    external: true
+    name: proxy
