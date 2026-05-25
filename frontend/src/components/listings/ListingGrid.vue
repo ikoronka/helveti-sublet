@@ -18,8 +18,8 @@ const pages = computed<(number | '...')[]>(() => {
 
   const result: (number | '...')[] = []
   for (let i = 0; i < sorted.length; i++) {
-    if (i > 0 && sorted[i] - sorted[i - 1] > 1) result.push('...')
-    result.push(sorted[i])
+    if (i > 0 && sorted[i]! - sorted[i - 1]! > 1) result.push('...')
+    result.push(sorted[i]!)
   }
   return result
 })
