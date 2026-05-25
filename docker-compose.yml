@@ -7,6 +7,9 @@ services:
       - db_data:/app/data
     environment:
       - DATABASE_URL=sqlite+aiosqlite:////app/data/helveti.db
+      - OLLAMA_URL=http://host.docker.internal:11434/api/generate
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - internal
       - proxy

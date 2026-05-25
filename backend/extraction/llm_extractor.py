@@ -3,9 +3,10 @@ import logging
 
 import httpx
 
+from config import settings
+
 logger = logging.getLogger(__name__)
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
 MODEL = "llama3.2:3b"
 
 PROMPT = """\
@@ -36,7 +37,7 @@ def extract(description: str) -> dict:
         return {}
     try:
         response = httpx.post(
-            OLLAMA_URL,
+            settings.ollama_url,
             json={"model": MODEL, "prompt": PROMPT + description, "format": "json", "stream": False},
             timeout=60.0,
         )
