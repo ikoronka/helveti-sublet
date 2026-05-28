@@ -18,6 +18,7 @@ class ListingType:
     is_furnished: Optional[bool]
     gender_preference: Optional[str]
     is_sublet: bool
+    is_summer_sublet: Optional[bool]
     available_from: Optional[date]
     available_to: Optional[date]
     min_stay_days: Optional[int]
@@ -38,6 +39,7 @@ class ListingFilterInput:
     available_from: Optional[date] = None
     available_to: Optional[date] = None
     is_sublet: Optional[bool] = None
+    summer_sublet: Optional[bool] = None
     commute_dest_lat: Optional[float] = None
     commute_dest_lng: Optional[float] = None
     commute_mode: Optional[str] = None

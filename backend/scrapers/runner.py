@@ -5,6 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from extraction import llm_extractor
+from extraction.summer import is_summer_sublet
 from extraction.text_parser import extract_all
 from models import Listing
 from scrapers.flatfox import FlatfoxScraper
@@ -48,6 +49,10 @@ async def run_all(session: AsyncSession) -> dict[str, int]:
             for key, value in llm_result.items():
                 if key not in extracted:
                     extracted[key] = value
+            extracted["is_summer_sublet"] = is_summer_sublet(
+                extracted.get("available_from"),
+                extracted.get("available_to"),
+            )
             listing = Listing(
                 id=lid,
                 first_seen=now,

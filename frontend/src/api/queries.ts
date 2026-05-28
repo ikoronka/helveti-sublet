@@ -19,6 +19,7 @@ export const LISTINGS_QUERY = `
         isFurnished
         genderPreference
         isSublet
+        isSummerSublet
         availableFrom
         availableTo
         minStayDays

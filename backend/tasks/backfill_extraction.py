@@ -1,20 +1,31 @@
 """
-Backfill Gemini extraction for listings that have no extracted fields yet.
-Run once after adding the extractor:  uv run python -m tasks.backfill_extraction
+Backfill extraction (regex + Ollama LLM fallback) for listings missing
+any of the extracted fields.
+
+Run:  uv run python -m tasks.backfill_extraction
 """
 import asyncio
 import logging
 import time
 
-from sqlalchemy import select
+from sqlalchemy import or_, select
 
 from db import AsyncSessionLocal, Base, engine
 from extraction import llm_extractor
+from extraction.summer import is_summer_sublet
 from extraction.text_parser import extract_all
 from models import Listing
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
+
+EXTRACTED_FIELDS = (
+    "gender_preference",
+    "is_furnished",
+    "is_sublet",
+    "available_from",
+    "available_to",
+)
 
 
 async def main():
@@ -24,8 +35,14 @@ async def main():
     async with AsyncSessionLocal() as session:
         result = await session.execute(
             select(Listing).where(
-                Listing.gender_preference.is_(None),
-                Listing.is_furnished.is_(None),
+                or_(
+                    Listing.gender_preference.is_(None),
+                    Listing.is_furnished.is_(None),
+                    Listing.is_sublet.is_(None),
+                    Listing.available_from.is_(None),
+                    Listing.available_to.is_(None),
+                    Listing.is_summer_sublet.is_(None),
+                ),
                 Listing.description != "",
             )
         )
@@ -36,17 +53,11 @@ async def main():
         for i, listing in enumerate(listings, 1):
             extracted = extract_all(listing.description)
 
-            # fall back to Gemini only for fields regex couldn't determine
-            needs_llm = (
-                "gender_preference" not in extracted
-                or "is_furnished" not in extracted
-                or "is_sublet" not in extracted
-            )
+            needs_llm = any(f not in extracted for f in EXTRACTED_FIELDS)
             if needs_llm:
                 llm_needed += 1
                 t0 = time.monotonic()
                 llm_result = llm_extractor.extract(listing.description)
-                # regex takes priority; LLM fills in what regex missed
                 for key, value in llm_result.items():
                     if key not in extracted:
                         extracted[key] = value
@@ -56,6 +67,11 @@ async def main():
 
             for key, value in extracted.items():
                 setattr(listing, key, value)
+
+            listing.is_summer_sublet = is_summer_sublet(
+                listing.available_from,
+                listing.available_to,
+            )
 
             if i % 10 == 0:
                 await session.commit()

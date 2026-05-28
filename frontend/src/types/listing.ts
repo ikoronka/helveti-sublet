@@ -12,6 +12,7 @@ export interface Listing {
   isFurnished: boolean | null
   genderPreference: string | null
   isSublet: boolean
+  isSummerSublet: boolean | null
   availableFrom: string | null
   availableTo: string | null
   minStayDays: number | null
@@ -44,6 +45,7 @@ export interface ListingFilters {
   isFurnished: boolean | null
   genderPreference: string | null
   isSublet: boolean | null
+  summerSublet: boolean | null
   availableFrom: string | null
   availableTo: string | null
 }
