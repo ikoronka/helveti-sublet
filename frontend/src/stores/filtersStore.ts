@@ -27,6 +27,7 @@ export const useFiltersStore = defineStore('filters', () => {
       isFurnished: null,
       genderPreference: null,
       isSublet: null,
+      summerSublet: null,
       availableFrom: null,
       availableTo: null,
     }
