@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from extraction import llm_extractor
 from extraction.summer import is_summer_sublet
 from extraction.text_parser import extract_all
+from kreis import kreis_from_zip
 from models import Listing
 from scrapers.flatfox import FlatfoxScraper
 from scrapers.immoscout import ImmoScoutScraper
@@ -33,6 +34,7 @@ async def run_all(session: AsyncSession) -> dict[str, int]:
     for data in listings:
         lid = _listing_id(data["source"], data["source_id"])
         scraped_ids.add(lid)
+        data["kreis"] = kreis_from_zip(data.get("zip_code"))
 
         result = await session.execute(select(Listing).where(Listing.id == lid))
         existing = result.scalar_one_or_none()

@@ -28,7 +28,8 @@ const images = JSON.parse(props.listing.images) as string[]
       </div>
 
       <p class="text-xs text-gray-500">
-        {{ listing.city }}<span v-if="listing.zipCode"> · {{ listing.zipCode }}</span>
+        {{ listing.city }}<span v-if="listing.zipCode"> · {{ listing.zipCode }}</span
+        ><span v-if="listing.kreis"> · Kreis {{ listing.kreis }}</span>
       </p>
 
       <div class="flex flex-wrap gap-1.5 pt-1">

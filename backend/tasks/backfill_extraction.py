@@ -8,12 +8,13 @@ import asyncio
 import logging
 import time
 
-from sqlalchemy import or_, select
+from sqlalchemy import or_, select, text
 
 from db import AsyncSessionLocal, Base, engine
 from extraction import llm_extractor
 from extraction.summer import is_summer_sublet
 from extraction.text_parser import extract_all
+from kreis import kreis_from_zip
 from models import Listing
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -28,9 +29,32 @@ EXTRACTED_FIELDS = (
 )
 
 
+async def _backfill_kreis(session) -> None:
+    # create_all won't add a column to an existing table, so add it if missing.
+    cols = await session.run_sync(
+        lambda s: [row[1] for row in s.execute(text("PRAGMA table_info(listings)"))]
+    )
+    if "kreis" not in cols:
+        await session.execute(text("ALTER TABLE listings ADD COLUMN kreis INTEGER"))
+        logger.info("Added kreis column.")
+
+    listings = (await session.execute(select(Listing))).scalars().all()
+    updated = 0
+    for listing in listings:
+        kreis = kreis_from_zip(listing.zip_code)
+        if listing.kreis != kreis:
+            listing.kreis = kreis
+            updated += 1
+    await session.commit()
+    logger.info("Backfilled kreis on %d / %d listings.", updated, len(listings))
+
+
 async def main():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
+    async with AsyncSessionLocal() as session:
+        await _backfill_kreis(session)
 
     async with AsyncSessionLocal() as session:
         result = await session.execute(

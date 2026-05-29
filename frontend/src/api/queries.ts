@@ -15,6 +15,7 @@ export const LISTINGS_QUERY = `
         city
         address
         zipCode
+        kreis
         areaM2
         isFurnished
         genderPreference

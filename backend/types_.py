@@ -14,6 +14,7 @@ class ListingType:
     city: str
     address: Optional[str]
     zip_code: Optional[str]
+    kreis: Optional[int]
     area_m2: Optional[int]
     is_furnished: Optional[bool]
     gender_preference: Optional[str]
@@ -34,6 +35,8 @@ class ListingFilterInput:
     rooms_min: Optional[float] = None
     rooms_max: Optional[float] = None
     city: Optional[str] = None
+    in_zurich: Optional[bool] = None
+    kreis: Optional[int] = None
     is_furnished: Optional[bool] = None
     gender_preference: Optional[str] = None
     available_from: Optional[date] = None

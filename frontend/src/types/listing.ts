@@ -8,6 +8,7 @@ export interface Listing {
   city: string
   address: string | null
   zipCode: string | null
+  kreis: number | null
   areaM2: number | null
   isFurnished: boolean | null
   genderPreference: string | null
@@ -42,6 +43,8 @@ export interface ListingFilters {
   roomsMin: number | null
   roomsMax: number | null
   city: string | null
+  inZurich: boolean | null
+  kreis: number | null
   isFurnished: boolean | null
   genderPreference: string | null
   isSublet: boolean | null

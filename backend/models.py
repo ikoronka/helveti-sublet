@@ -20,6 +20,7 @@ class Listing(Base):
     address: Mapped[str | None] = mapped_column(String, nullable=True)
     city: Mapped[str] = mapped_column(String, nullable=False)
     zip_code: Mapped[str | None] = mapped_column(String, nullable=True)
+    kreis: Mapped[int | None] = mapped_column(Integer, nullable=True)
     latitude: Mapped[float | None] = mapped_column(Float, nullable=True)
     longitude: Mapped[float | None] = mapped_column(Float, nullable=True)
     is_furnished: Mapped[bool | None] = mapped_column(Boolean, nullable=True)

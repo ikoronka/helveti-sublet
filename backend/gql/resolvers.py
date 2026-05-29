@@ -29,6 +29,10 @@ async def get_listings(
             query = query.where(Listing.rooms <= filters.rooms_max)
         if filters.city is not None:
             query = query.where(Listing.city == filters.city)
+        if filters.in_zurich is True:
+            query = query.where(Listing.kreis.is_not(None))
+        if filters.kreis is not None:
+            query = query.where(Listing.kreis == filters.kreis)
         if filters.is_furnished is not None:
             query = query.where(Listing.is_furnished == filters.is_furnished)
         if filters.gender_preference is not None:
@@ -90,6 +94,7 @@ def _to_listing_type(l: Listing) -> ListingType:
         city=l.city,
         address=l.address,
         zip_code=l.zip_code,
+        kreis=l.kreis,
         area_m2=l.area_m2,
         is_furnished=l.is_furnished,
         gender_preference=l.gender_preference,

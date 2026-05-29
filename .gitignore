@@ -20,3 +20,6 @@ backend/.playwright/
 .DS_Store
 *.log
 /tmp/
+
+# Secret notes (server addresses, etc.) — never commit
+SERVER.secret.md

@@ -3,6 +3,7 @@ import { useFiltersStore } from '@/stores/filtersStore'
 import ListingGrid from '@/components/listings/ListingGrid.vue'
 import PriceRangeSlider from '@/components/filters/PriceRangeSlider.vue'
 import RoomSelector from '@/components/filters/RoomSelector.vue'
+import KreisFilter from '@/components/filters/KreisFilter.vue'
 import SmartFilterChips from '@/components/filters/SmartFilterChips.vue'
 import DateRangePicker from '@/components/filters/DateRangePicker.vue'
 
@@ -19,6 +20,7 @@ const filtersStore = useFiltersStore()
       <aside class="w-64 shrink-0 space-y-6">
         <PriceRangeSlider />
         <RoomSelector />
+        <KreisFilter />
         <SmartFilterChips />
         <DateRangePicker />
         <button

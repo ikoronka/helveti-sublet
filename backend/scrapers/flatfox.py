@@ -3,12 +3,12 @@ from scrapers.base import BaseScraper
 
 BASE = "https://flatfox.ch/api/v1"
 
-# Zurich canton bounding box (covers city + surroundings)
+# Bounding box tightened around the city of Zurich.
 ZURICH_BBOX = {
-    "north": 47.696,
-    "south": 47.220,
-    "east": 8.799,
-    "west": 8.361,
+    "north": 47.441711,
+    "south": 47.312475,
+    "east": 8.601587,
+    "west": 8.426584,
 }
 
 PK_BATCH_SIZE = 50
@@ -20,7 +20,7 @@ class FlatfoxScraper(BaseScraper):
     async def _fetch_pks(self) -> list[int]:
         data = await self._get(
             f"{BASE}/pin/",
-            params={**ZURICH_BBOX, "max_count": 400},
+            params={**ZURICH_BBOX, "max_count": 1000},
         )
         return [item["pk"] for item in data]
 
