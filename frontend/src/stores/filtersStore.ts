@@ -9,6 +9,8 @@ export const useFiltersStore = defineStore('filters', () => {
     roomsMin: null,
     roomsMax: null,
     city: null,
+    inZurich: null,
+    kreis: null,
     isFurnished: null,
     genderPreference: null,
     isSublet: null,
