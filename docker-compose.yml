@@ -1,5 +1,5 @@
 services:
-  backend:
+  helvetisublet-backend:
     build: ./backend
     container_name: helvetisublet-backend
     restart: unless-stopped
@@ -12,14 +12,13 @@ services:
       - "host.docker.internal:host-gateway"
     networks:
       - internal
-      - proxy
 
-  frontend:
+  helvetisublet-frontend:
     build: ./frontend
     container_name: helvetisublet-frontend
     restart: unless-stopped
     depends_on:
-      - backend
+      - helvetisublet-backend
     networks:
       - internal
       - proxy
