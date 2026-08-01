@@ -39,8 +39,6 @@ async def get_listings(
             query = query.where(Listing.gender_preference == filters.gender_preference)
         if filters.is_sublet is not None:
             query = query.where(Listing.is_sublet == filters.is_sublet)
-        if filters.summer_sublet is True:
-            query = query.where(Listing.is_summer_sublet.is_(True))
         if filters.available_from is not None:
             query = query.where(Listing.available_from >= filters.available_from)
         if filters.available_to is not None:
@@ -99,7 +97,6 @@ def _to_listing_type(l: Listing) -> ListingType:
         is_furnished=l.is_furnished,
         gender_preference=l.gender_preference,
         is_sublet=l.is_sublet,
-        is_summer_sublet=l.is_summer_sublet,
         available_from=l.available_from,
         available_to=l.available_to,
         min_stay_days=l.min_stay_days,

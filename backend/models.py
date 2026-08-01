@@ -34,7 +34,6 @@ class Listing(Base):
     first_seen: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     last_seen: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
-    is_summer_sublet: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
 
 
 class CommuteCache(Base):

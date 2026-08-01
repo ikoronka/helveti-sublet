@@ -14,10 +14,6 @@ function toggleFemaleOnly() {
 function toggleSublet() {
   store.filters.isSublet = store.filters.isSublet === true ? null : true
 }
-
-function toggleSummerSublet() {
-  store.filters.summerSublet = store.filters.summerSublet === true ? null : true
-}
 </script>
 
 <template>
@@ -56,17 +52,6 @@ function toggleSummerSublet() {
         ]"
       >
         Sublet
-      </button>
-      <button
-        @click="toggleSummerSublet"
-        :class="[
-          'px-3 py-1 rounded-full text-sm border transition-colors text-left',
-          store.filters.summerSublet === true
-            ? 'bg-gray-900 text-white border-gray-900'
-            : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400',
-        ]"
-      >
-        Summer sublet
       </button>
     </div>
   </div>

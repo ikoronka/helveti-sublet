@@ -14,7 +14,6 @@ export const useFiltersStore = defineStore('filters', () => {
     isFurnished: null,
     genderPreference: null,
     isSublet: null,
-    summerSublet: null,
     availableFrom: null,
     availableTo: null,
   })
@@ -31,7 +30,6 @@ export const useFiltersStore = defineStore('filters', () => {
       isFurnished: null,
       genderPreference: null,
       isSublet: null,
-      summerSublet: null,
       availableFrom: null,
       availableTo: null,
     }
@@ -50,7 +48,6 @@ export const useFiltersStore = defineStore('filters', () => {
       isFurnished: f.isFurnished ?? undefined,
       genderPreference: f.genderPreference ?? undefined,
       isSublet: f.isSublet ?? undefined,
-      summerSublet: f.summerSublet ?? undefined,
       availableFrom: f.availableFrom ?? undefined,
       availableTo: f.availableTo ?? undefined,
     }
