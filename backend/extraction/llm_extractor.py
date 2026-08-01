@@ -1,5 +1,6 @@
 import json
 import logging
+import time
 from datetime import date
 
 import httpx
@@ -9,6 +10,8 @@ from config import settings
 logger = logging.getLogger(__name__)
 
 MODEL = "llama3.2:3b"
+MAX_ATTEMPTS = 3
+RETRY_DELAY_SECONDS = 5
 
 PROMPT_TEMPLATE = """\
 You are extracting structured data from a Swiss apartment/room listing description.
@@ -42,33 +45,49 @@ def _build_prompt() -> str:
     return PROMPT_TEMPLATE.format(today=date.today().isoformat())
 
 
+def _parse_response(data: dict) -> dict:
+    result = {}
+    if data.get("gender_preference") in ("female", "male"):
+        result["gender_preference"] = data["gender_preference"]
+    if isinstance(data.get("is_furnished"), bool):
+        result["is_furnished"] = data["is_furnished"]
+    if isinstance(data.get("is_sublet"), bool):
+        result["is_sublet"] = data["is_sublet"]
+    for key in ("available_from", "available_to"):
+        val = data.get(key)
+        if isinstance(val, str):
+            try:
+                result[key] = date.fromisoformat(val)
+            except ValueError:
+                pass
+    return result
+
+
 def extract(description: str) -> dict:
-    """Return extracted fields for a single listing description. Never raises — returns empty dict on failure."""
+    """Return extracted fields for a single listing description. Never raises — returns empty
+    dict on failure. Retries on timeout rather than immediately falling back to regex-only
+    extraction, since the nightly scrape job has time to spare; still gives up after
+    MAX_ATTEMPTS so a genuinely-down Ollama instance can't hang the job forever."""
     if not description or not description.strip():
         return {}
-    try:
-        response = httpx.post(
-            settings.ollama_url,
-            json={"model": MODEL, "prompt": _build_prompt() + description, "format": "json", "stream": False},
-            timeout=60.0,
-        )
-        response.raise_for_status()
-        data = json.loads(response.json()["response"])
-        result = {}
-        if data.get("gender_preference") in ("female", "male"):
-            result["gender_preference"] = data["gender_preference"]
-        if isinstance(data.get("is_furnished"), bool):
-            result["is_furnished"] = data["is_furnished"]
-        if isinstance(data.get("is_sublet"), bool):
-            result["is_sublet"] = data["is_sublet"]
-        for key in ("available_from", "available_to"):
-            val = data.get(key)
-            if isinstance(val, str):
-                try:
-                    result[key] = date.fromisoformat(val)
-                except ValueError:
-                    pass
-        return result
-    except Exception as e:
-        logger.warning("llm_extractor failed: %s", e)
-        return {}
+
+    for attempt in range(1, MAX_ATTEMPTS + 1):
+        try:
+            response = httpx.post(
+                settings.ollama_url,
+                json={"model": MODEL, "prompt": _build_prompt() + description, "format": "json", "stream": False},
+                timeout=60.0,
+            )
+            response.raise_for_status()
+            data = json.loads(response.json()["response"])
+            return _parse_response(data)
+        except httpx.TimeoutException as e:
+            logger.warning("llm_extractor timed out (attempt %d/%d): %s", attempt, MAX_ATTEMPTS, e)
+            if attempt < MAX_ATTEMPTS:
+                time.sleep(RETRY_DELAY_SECONDS)
+        except Exception as e:
+            logger.warning("llm_extractor failed: %s", e)
+            return {}
+
+    logger.error("llm_extractor gave up after %d timeout retries", MAX_ATTEMPTS)
+    return {}

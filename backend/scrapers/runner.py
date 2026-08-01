@@ -1,4 +1,5 @@
 import hashlib
+import logging
 from datetime import datetime, timezone
 
 from sqlalchemy import select
@@ -11,6 +12,8 @@ from kreis import kreis_from_zip
 from models import Listing
 from scrapers.flatfox import FlatfoxScraper
 from scrapers.immoscout import ImmoScoutScraper
+
+logger = logging.getLogger(__name__)
 
 
 def _listing_id(source: str, source_id: str) -> str:
@@ -46,7 +49,11 @@ async def run_all(session: AsyncSession) -> dict[str, int]:
             existing.is_active = True
             counts["updated"] += 1
         else:
-            extracted = extract_all(data.get("description", ""))
+            try:
+                extracted = extract_all(data.get("description", ""))
+            except Exception:
+                logger.exception("text extraction failed for listing %s, continuing with regex fields unset", lid)
+                extracted = {}
             llm_result = llm_extractor.extract(data.get("description", ""))
             for key, value in llm_result.items():
                 if key not in extracted:
