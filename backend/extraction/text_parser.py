@@ -59,21 +59,25 @@ MONTHS = {
 _MONTH_RE = "|".join(sorted(MONTHS.keys(), key=len, reverse=True))
 
 
-def _resolve_year(month: int, day: int) -> int:
-    today = date.today()
-    candidate = date(today.year, month, day)
-    return today.year if candidate >= today else today.year + 1
-
-
-def _two_digit_year(yy: int) -> int:
-    return 2000 + yy if yy < 70 else 1900 + yy
-
-
 def _safe_date(year: int, month: int, day: int) -> date | None:
     try:
         return date(year, month, day)
     except ValueError:
         return None
+
+
+def _resolve_year(month: int, day: int) -> int | None:
+    """Pick the next occurrence of month/day from today. None if month/day isn't a real date
+    (e.g. day 31 of a 30-day month) — a leap-day case may still resolve on the following year."""
+    today = date.today()
+    candidate = _safe_date(today.year, month, day)
+    if candidate is None:
+        return today.year + 1 if _safe_date(today.year + 1, month, day) else None
+    return today.year if candidate >= today else today.year + 1
+
+
+def _two_digit_year(yy: int) -> int:
+    return 2000 + yy if yy < 70 else 1900 + yy
 
 
 def _parse_numeric_dmy(s: str) -> date | None:
@@ -88,6 +92,8 @@ def _parse_numeric_dmy(s: str) -> date | None:
         year = _two_digit_year(y) if y < 100 else y
     else:
         year = _resolve_year(month, day)
+        if year is None:
+            return None
     return _safe_date(year, month, day)
 
 
@@ -106,6 +112,8 @@ def _parse_month_name(day_part: str | None, month_word: str, year_part: str | No
         year = _two_digit_year(y) if y < 100 else y
     else:
         year = _resolve_year(month, day)
+        if year is None:
+            return None
     if month == 2:
         day = min(day, calendar.monthrange(year, month)[1])
     return _safe_date(year, month, day)
