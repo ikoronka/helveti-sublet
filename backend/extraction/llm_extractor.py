@@ -9,7 +9,7 @@ from config import settings
 
 logger = logging.getLogger(__name__)
 
-MODEL = "llama3.2:3b"
+MODEL = "qwen2.5:3b-instruct"
 MAX_ATTEMPTS = 3
 RETRY_DELAY_SECONDS = 5
 

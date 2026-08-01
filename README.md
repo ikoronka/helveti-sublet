@@ -38,7 +38,7 @@ Scrapes Flatfox and ImmoScout24, extracts structured fields from German/English 
 
 - Node.js 20+ and pnpm
 - Python 3.13+ and [uv](https://docs.astral.sh/uv/)
-- [Ollama](https://ollama.com) with `llama3.2:3b` pulled (`ollama pull llama3.2:3b`)
+- [Ollama](https://ollama.com) with `qwen2.5:3b-instruct` pulled (`ollama pull qwen2.5:3b-instruct`)
 
 ---
 
