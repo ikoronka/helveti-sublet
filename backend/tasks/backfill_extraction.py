@@ -12,7 +12,6 @@ from sqlalchemy import or_, select, text
 
 from db import AsyncSessionLocal, Base, engine
 from extraction import llm_extractor
-from extraction.summer import is_summer_sublet
 from extraction.text_parser import extract_all
 from kreis import kreis_from_zip
 from models import Listing
@@ -65,7 +64,6 @@ async def main():
                     Listing.is_sublet.is_(None),
                     Listing.available_from.is_(None),
                     Listing.available_to.is_(None),
-                    Listing.is_summer_sublet.is_(None),
                 ),
                 Listing.description != "",
             )
@@ -91,11 +89,6 @@ async def main():
 
             for key, value in extracted.items():
                 setattr(listing, key, value)
-
-            listing.is_summer_sublet = is_summer_sublet(
-                listing.available_from,
-                listing.available_to,
-            )
 
             if i % 10 == 0:
                 await session.commit()

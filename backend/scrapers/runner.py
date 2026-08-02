@@ -6,12 +6,10 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from extraction import llm_extractor
-from extraction.summer import is_summer_sublet
 from extraction.text_parser import extract_all
 from kreis import kreis_from_zip
 from models import Listing
 from scrapers.flatfox import FlatfoxScraper
-from scrapers.immoscout import ImmoScoutScraper
 
 logger = logging.getLogger(__name__)
 
@@ -25,14 +23,8 @@ async def run_all(session: AsyncSession) -> dict[str, int]:
     scraped_ids: set[str] = set()
     counts = {"inserted": 0, "updated": 0}
 
-    flatfox_listings = []
     async with FlatfoxScraper() as scraper:
-        flatfox_listings = await scraper.scrape()
-
-    immoscout_scraper = ImmoScoutScraper()
-    immoscout_listings = await immoscout_scraper.scrape()
-
-    listings = flatfox_listings + immoscout_listings
+        listings = await scraper.scrape()
 
     for data in listings:
         lid = _listing_id(data["source"], data["source_id"])
@@ -58,10 +50,6 @@ async def run_all(session: AsyncSession) -> dict[str, int]:
             for key, value in llm_result.items():
                 if key not in extracted:
                     extracted[key] = value
-            extracted["is_summer_sublet"] = is_summer_sublet(
-                extracted.get("available_from"),
-                extracted.get("available_to"),
-            )
             listing = Listing(
                 id=lid,
                 first_seen=now,
