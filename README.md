@@ -1,5 +1,6 @@
 # Helvéti Sublet 🏠
 
+[Live demo](https://helvetisublet.ikoronka.com/)
 A Zurich apartment listing aggregator with smart filters that native platforms don't offer.
 
 It scrapes Flatfox listings, pulls out useful details from the German or English descriptions using regex plus a local LLM, and lets you filter by furnished status, gender preference, sublet dates, and (soon) commute time.
